@@ -1,0 +1,52 @@
+class MinimumSpanningTree:
+    def __init__(self,num_vertices):
+        self.total_vertices = num_vertices
+        self.edges= []
+    def add_edge(self, start,end, weight):
+        self.edges.append([start,end,weight])
+    def find_root(self,parents,vertex):
+        if parents[vertex]==vertex:
+            return vertex
+        return self.find_root(parents,parents[vertex])
+    def perform_union(self, parents,ranks,root1,root2):
+        root1_parent=self.find_root(parents,root1)
+        root2_parent=self.find_root(parents,root2)
+        if ranks[root1_parent]<ranks[root2_parent]:
+            parents[root1_parent]=root2_parent
+        elif ranks[root1_parent]>ranks[root2_parent]:
+            parents[root2_parent]=root1_parent
+        else:
+            parents[root2_parent]=root1_parent
+            ranks[root1_parent]+=1
+    def compute_mst(self):
+        mst=[]
+        self.edges.sort(key=lambda edge:edge[2])
+        parents = [i for i in range(self.total_vertices)]
+        ranks = [0]*self.total_vertices
+        edge_count=0
+        index=0
+        while edge_count<self.total_vertices-1:
+            source,destination,weight=self.edges[index]
+            index+=1
+            source_root=self.find_root(parents,source)
+            destination_root=self.find_root(parents,destination)
+            if source_root!=destination_root:
+                edge_count+=1
+                mst.append([source,destination,weight])
+                self.perform_union(parents,ranks,source_root,destination_root)
+        print("Edges in the Minimum Spanning Tree (MST):")
+        for source, destination, weight in mst:
+            print(f"{source} -- {destination} == {weight}")
+
+# Example usage
+graph = MinimumSpanningTree(6)
+graph.add_edge(0,1,4)
+graph.add_edge(0,2,3)
+graph.add_edge(1,2,1)
+graph.add_edge(1,3,2)
+graph.add_edge(2,3,5)
+graph.add_edge(2,4,4)
+graph.add_edge(3,4,7)
+graph.add_edge(3,5,3)
+graph.add_edge(4,5,6)
+graph.compute_mst()
