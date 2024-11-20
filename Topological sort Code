@@ -1,0 +1,32 @@
+from collections import defaultdict
+
+class DirectedGraph:
+    def __init__(self,total_vertices):
+        self.adjacency_list=defaultdict(list)
+        self.num_vertices =total_vertices
+    def insert_edge(self,source,target):
+        self.adjacency_list[source].append(target)
+    def _dfs_topological_sort(self,current_node,visited_nodes,final_stack):
+        visited_nodes[current_node]=True
+        for adjacent in self.adjacency_list[current_node]:
+            if not visited_nodes[adjacent]:
+                self._dfs_topological_sort(adjacent,visited_nodes,final_stack)
+        final_stack.append(current_node)
+    def perform_topological_sort(self):
+        visited_nodes=[False]*self.num_vertices
+        final_stack=[]
+        for node in range(self.num_vertices):
+            if not visited_nodes[node]:
+                self._dfs_topological_sort(node,visited_nodes,final_stack)
+        return final_stack[::-1]
+# Example usage
+graph = DirectedGraph(7)
+graph.insert_edge(0,1)
+graph.insert_edge(0,2)
+graph.insert_edge(1,3)
+graph.insert_edge(1,4)
+graph.insert_edge(2,4)
+graph.insert_edge(3,5)
+graph.insert_edge(4,5)
+graph.insert_edge(5,6)
+print("Topological Sort:",graph.perform_topological_sort())
